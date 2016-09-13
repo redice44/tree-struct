@@ -1,6 +1,6 @@
 class Node {
   constructor(data, parent = null) {
-    console.log('Creating a new Node.');
+    //console.log('Creating a new Node.');
     this._data = data;
     this._parent = parent;
     this._children = [];
@@ -13,17 +13,25 @@ class Node {
     } else if (child) {
       this._children.push(new Node(child, this));
     } else {
-      // TODO: Handle Invalid Child Error
-      console.log('Cannot push child');
+      throw new InvalidNodeError('Child cannot be null.');
     }
   }
 
   set children(values) {
     if (values instanceof Array) {
-      this._children = values;
+      let c = [];
+
+      for (let v of values) {
+        if (v instanceof Node) {
+          c.push(v);
+        } else {
+          c.push(new Node(v));
+        }
+      }
+
+      this._children = c;
     } else {
-      // TODO: Handle Invalid Children Error
-      console.log('Children is not an Array');
+      throw new InvalidChildrenError('Children must be an Array of Nodes.');
     }
   }
 
@@ -31,8 +39,7 @@ class Node {
     if (value instanceof Node) {
       this._parent = value;
     } else {
-      // TODO: Handle Invalid set parent
-      console.log('Invalid parent');
+      throw new InvalidParentError('Parent must be a valid Node.');
     }
   }
 
