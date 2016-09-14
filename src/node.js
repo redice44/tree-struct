@@ -6,6 +6,16 @@ class Node {
     this._children = [];
   }
 
+  equals(node, fn) {
+    if (typeof fn === 'function') {
+      return fn(this, node);
+    }
+    return this._data === node.data &&
+      this._parent === node.parent &&
+      // TODO: Deep comparison of children array
+      this._children.length === node.children.length;
+  }
+
   push(child) {
     if (child instanceof Node) {
       child.parent = this;

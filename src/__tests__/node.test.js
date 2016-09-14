@@ -87,3 +87,27 @@ test('does not push null to root', () => {
     root.push(null);
   }).toThrow();
 });
+
+/* Node.equals */
+
+test('equal nodes', () => {
+  var root = new Node('root');
+  var same = new Node('root');
+  var diff = new Node('notRoot');
+  var similar = new Node('root');
+  var similar1 = new Node({name: 'sim', extra: 1});
+  var similar2 = new Node({name: 'sim', extra: 2});
+
+  var equality = function(me, test) {
+    return me.data.name === test.data.name;
+  };
+
+  expect(root.equals(same)).toBe(true);
+  expect(root.equals(diff)).toBe(false);
+  expect(similar1.equals(similar2)).toBe(false);
+  expect(similar1.equals(similar2, equality)).toBe(true);
+
+  root.push(similar);
+  expect(root.equals(same)).toBe(false);
+  expect(root.equals(similar)).toBe(false);
+});
