@@ -195,3 +195,31 @@ test('traverse depth first preorder', () => {
     'root', 'child1', 'child3', 'child5', 'child6', 'child2', 'child4'
   ]);
 });
+
+/* Node.contains */
+test('contains node', () => {
+  var root = new Node('root');
+  var eq = function(me, target) {
+    return me._data === target.data &&
+      me._parent === target.parent;
+  };
+
+  root.push(new Node('child1.1'));
+  root.push(new Node('child1.2'));
+  root.push(new Node('child1.3'));
+
+  expect(root.contains(root.children[0])).toBe(true);
+  expect(root.contains(root.children[1])).toBe(true);
+  expect(root.contains(root.children[2])).toBe(true);
+
+  root.children[0].push(new Node('child2.1'));
+  root.children[0].push(new Node('child2.2'));
+  root.children[0].push(new Node('child2.3'));
+  root.children[0].push(new Node('child2.4'));
+  root.children[0].push(new Node('child2.5'));
+
+  expect(root.contains(root.children[0].children[3])).toBe(true);
+
+  root.push(new Node('child1.1'));
+  expect(root.contains(root.children[3], eq)).toBe(true);
+});

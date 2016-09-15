@@ -9,9 +9,27 @@ class Node {
     this.depthFirstPreOrder = this.depthFirstPreOrder;
   }
 
+  contains(target, fn) {
+    console.log('Checking', this);
+
+    if (this.equals(target, fn)) {
+      return true;
+    } else {
+      let childResult = false;
+      for (let c of this.children) {
+        if (c.contains(target, fn)) {
+          childResult = true;
+        }
+      }
+
+      return childResult;
+    }
+  }
+
   /* Traversals */
   depthFirstPreOrder(isFlat = false) {
-    return isFlat ? this._depthFirstPreOrderFlat(this) : this._depthFirstPreOrder(this);
+    return isFlat ? this._depthFirstPreOrderFlat(this) :
+      this._depthFirstPreOrder(this);
   }
 
   _depthFirstPreOrderFlat(node) {
