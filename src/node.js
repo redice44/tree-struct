@@ -1,11 +1,54 @@
+// TODO: Move all tree functionality to node. Rename node class to something else.
+
 class Node {
   constructor(data, parent = null) {
     //console.log('Creating a new Node.');
     this._data = data;
     this._parent = parent;
     this._children = [];
+    this.depthFirstPreOrder = this.depthFirstPreOrder;
   }
 
+  /* Traversals */
+  depthFirstPreOrder(isFlat = false) {
+    return isFlat ? this._depthFirstPreOrderFlat(this) : this._depthFirstPreOrder(this);
+  }
+
+  _depthFirstPreOrderFlat(node) {
+    let n = [];
+    n.push(node.data);
+    if (node.children.length > 0) {
+      for (let c of node.children) {
+        n = n.concat(this._depthFirstPreOrderFlat(c));
+      }
+    }
+
+    return n;
+  }
+
+  _depthFirstPreOrder(node) {
+    let n = {};
+    n.data = node.data;
+    if (node.children.length > 0) {
+      n.children = [];
+
+      for (let c of node.children) {
+        n.children.push(this._depthFirstPreOrder(c));
+      }
+    }
+    return n;
+  }
+
+  /* Checks to see if the Nodes are equal.
+
+    @param
+      Node node: Node to check against this Node.
+      Function fn (optional): Custom function to handle comparison.
+
+    @return
+      true: If they are equal.
+      false: If they are not equal.
+  */
   equals(node, fn) {
     if (typeof fn === 'function') {
       return fn(this, node);
@@ -16,6 +59,12 @@ class Node {
       this._children.length === node.children.length;
   }
 
+  /* Adds the child to the end of the array of children for this Node.
+
+    @param
+      child: Is a Node or non-null object.
+  */
+  // IDEA: Able to add empty nodes, perhaps.
   push(child) {
     if (child instanceof Node) {
       child.parent = this;

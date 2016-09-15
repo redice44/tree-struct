@@ -111,3 +111,87 @@ test('equal nodes', () => {
   expect(root.equals(same)).toBe(false);
   expect(root.equals(similar)).toBe(false);
 });
+
+test('traverse depth first preorder', () => {
+  var root = new Node('root');
+  root.push(new Node('child1'));
+  root.push(new Node('child2'));
+
+  expect(root.depthFirstPreOrder()).toEqual({
+    data: 'root',
+    children: [
+      {
+        data: 'child1'
+      },
+      {
+        data: 'child2'
+      }
+    ]
+  });
+  expect(root.depthFirstPreOrder(true)).toEqual([
+    'root', 'child1', 'child2'
+  ]);
+
+  root.children[0].push(new Node('child3'));
+  root.children[1].push(new Node('child4'));
+
+  expect(root.depthFirstPreOrder()).toEqual({
+    data: 'root',
+    children: [
+      {
+        data: 'child1',
+        children: [
+          {
+            data: 'child3'
+          }
+        ]
+      },
+      {
+        data: 'child2',
+        children: [
+          {
+            data: 'child4'
+          }
+        ]
+      }
+    ]
+  });
+  expect(root.depthFirstPreOrder(true)).toEqual([
+    'root', 'child1', 'child3', 'child2', 'child4'
+  ]);
+
+  root.children[0].children[0].push(new Node('child5'));
+  root.children[0].children[0].push(new Node('child6'));
+  expect(root.depthFirstPreOrder()).toEqual({
+    data: 'root',
+    children: [
+      {
+        data: 'child1',
+        children: [
+          {
+            data: 'child3',
+            children: [
+              {
+                data: 'child5'
+              },
+              {
+                data: 'child6'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        data: 'child2',
+        children: [
+          {
+            data: 'child4'
+          }
+        ]
+      }
+    ]
+  });
+  expect(root.depthFirstPreOrder(true)).toEqual([
+    'root', 'child1', 'child3', 'child5', 'child6', 'child2', 'child4'
+  ]);
+});
