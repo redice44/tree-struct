@@ -89,7 +89,6 @@ test('does not push null to root', () => {
 });
 
 /* Node.equals */
-
 test('equal nodes', () => {
   var root = new Node('root');
   var same = new Node('root');
@@ -102,6 +101,9 @@ test('equal nodes', () => {
     return me.data.name === test.data.name;
   };
 
+  expect(() => {
+    root.equals('bob');
+  }).toThrow();
   expect(root.equals(same)).toBe(true);
   expect(root.equals(diff)).toBe(false);
   expect(similar1.equals(similar2)).toBe(false);
@@ -197,7 +199,7 @@ test('traverse depth first preorder', () => {
 });
 
 /* Node.contains */
-test('contains node', () => {
+test('this node contains node', () => {
   var root = new Node('root');
   var eq = function(me, target) {
     return me._data === target.data &&
@@ -222,4 +224,29 @@ test('contains node', () => {
 
   root.push(new Node('child1.1'));
   expect(root.contains(root.children[3], eq)).toBe(true);
+});
+
+/* Node.update */
+test('updating a node', () => {
+  var root = new Node({name: 'root', id: '_root'});
+  var rootTest = new Node({name: 'hi', id: '_root'});
+  var test = new Node({name: 'child', id: 'child1.4'});
+  var eq = function(me, target) {
+    return me.data.id === target.data.id;
+  };
+
+  root.push(new Node({name: 'child1.1', id: 'child1.1'}));
+  root.push(new Node({name: 'child1.2', id: 'child1.2'}));
+  root.push(new Node({name: 'child1.3', id: 'child1.3'}));
+  root.push(new Node({name: 'child1.4', id: 'child1.4'}));
+
+  expect(() => {
+    root.updateNode(test);
+  }).toThrow();
+  expect(root.contains(test, eq)).toBe(true);
+  expect(root.updateNode(test, eq)).toBe(true);
+  expect(root.children[3].data.name).toBe('child');
+  expect(root.updateNode(rootTest, eq)).toBe(true);
+  expect(root.data.name).toBe('hi');
+
 });

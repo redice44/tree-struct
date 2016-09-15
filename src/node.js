@@ -6,24 +6,68 @@ class Node {
     this._data = data;
     this._parent = parent;
     this._children = [];
-    this.depthFirstPreOrder = this.depthFirstPreOrder;
   }
 
-  contains(target, fn) {
-    console.log('Checking', this);
+  /* Searches the node for the passed node. If found, replaces the node with the
+     passed node.
 
-    if (this.equals(target, fn)) {
-      return true;
-    } else {
-      let childResult = false;
+      @param
+        Node node: Node to search for and update in this Node.
+        Function fn : Custom function to handle comparison. Required.
+
+      @return
+        true: If the node was updated.
+        false: If the node is not updated.
+  */
+  updateNode(node, fn) {
+    if (typeof fn === 'function') {
+      let result = false;
+
+      if (this.equals(node, fn)) {
+        this._updateNode(this, node);
+        return true;
+      }
+
       for (let c of this.children) {
-        if (c.contains(target, fn)) {
-          childResult = true;
+        if (c.updateNode(node, fn)) {
+          result = true;
         }
       }
 
-      return childResult;
+      return result;
     }
+    throw new InvalidEqFunction('Requires an Equality function.');
+  }
+
+  _updateNode(me, node) {
+    me._data = node.data;
+    me._children = node.children;
+  }
+
+  /* Searches the node for the passed node.
+
+      @param
+        Node node: Node to search for in this Node.
+        Function fn (optional): Custom function to handle comparison.
+
+      @return
+        true: If the node is found.
+        false: If the node is not found.
+  */
+  contains(node, fn) {
+    let result = false;
+
+    if (this.equals(node, fn)) {
+      return true;
+    }
+
+    for (let c of this.children) {
+      if (c.contains(node, fn)) {
+        result = true;
+      }
+    }
+
+    return result;
   }
 
   /* Traversals */
@@ -68,13 +112,16 @@ class Node {
       false: If they are not equal.
   */
   equals(node, fn) {
-    if (typeof fn === 'function') {
-      return fn(this, node);
+    if (node instanceof Node) {
+      if (typeof fn === 'function') {
+        return fn(this, node);
+      }
+      return this._data === node.data &&
+        this._parent === node.parent &&
+        // TODO: Deep comparison of children array
+        this._children.length === node.children.length;
     }
-    return this._data === node.data &&
-      this._parent === node.parent &&
-      // TODO: Deep comparison of children array
-      this._children.length === node.children.length;
+    throw new InvalidNodeError('Target must be a Node.');
   }
 
   /* Adds the child to the end of the array of children for this Node.
@@ -116,7 +163,7 @@ class Node {
     if (value instanceof Node) {
       this._parent = value;
     } else {
-      throw new InvalidParentError('Parent must be a valid Node.');
+      throw new InvalidNodeError('Parent must be a valid Node.');
     }
   }
 
