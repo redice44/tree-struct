@@ -58,7 +58,7 @@ class Node {
   }
 
   _updateNode(me, node) {
-    me._data = node.data;
+    me._data = Object.assign({}, me._data, node.data);
     me._children = node.children;
   }
 
