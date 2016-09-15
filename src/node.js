@@ -8,6 +8,24 @@ class Node {
     this._children = [];
   }
 
+  static arrayToNodes(arr) {
+    if (arr instanceof Array) {
+      let c = [];
+
+      for (let v of arr) {
+        if (v instanceof Node) {
+          c.push(v);
+        } else {
+          c.push(new Node(v));
+        }
+      }
+
+      return c;
+    }
+
+    throw new InvalidType('Expected Array');
+  }
+
   /* Searches the node for the passed node. If found, replaces the node with the
      passed node.
 
@@ -142,21 +160,7 @@ class Node {
   }
 
   set children(values) {
-    if (values instanceof Array) {
-      let c = [];
-
-      for (let v of values) {
-        if (v instanceof Node) {
-          c.push(v);
-        } else {
-          c.push(new Node(v));
-        }
-      }
-
-      this._children = c;
-    } else {
-      throw new InvalidChildrenError('Children must be an Array of Nodes.');
-    }
+    this._children = Node.arrayToNodes(values);
   }
 
   set parent(value) {
