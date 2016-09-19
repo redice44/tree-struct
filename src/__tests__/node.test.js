@@ -48,6 +48,9 @@ test('changes children of root', () => {
   expect(root.children).toEqual([]);
 
   root.children = children;
+  for (var c of children) {
+    c.parent = root;
+  }
   expect(root.children).toEqual(children);
 
   root.children = [];
@@ -59,7 +62,8 @@ test('changes children of root', () => {
 
   root.children = ['child1', 'child2'];
   expect(root.children.length).toBe(2);
-  expect(root.children).toEqual([new Node('child1'), new Node('child2')]);
+  expect(root.children).toEqual([new Node('child1', root),
+    new Node('child2', root)]);
 });
 
 /* Node.push(child) */

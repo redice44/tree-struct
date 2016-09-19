@@ -215,6 +215,9 @@ class Node {
 
   set children(values) {
     this._children = Node.arrayToNodes(values);
+    for (let c of this._children) {
+      c.parent = this;
+    }
   }
 
   set parent(value) {
