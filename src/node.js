@@ -3,9 +3,29 @@
 class Node {
   constructor(data, parent = null) {
     //console.log('Creating a new Node.');
-    this._data = data;
+    this.__isNode__ = true;
+    if (typeof data === 'object') {
+      this._data = Object.assign({}, data);
+    } else {
+      this._data = data;
+    }
     this._parent = parent;
     this._children = [];
+  }
+
+  /* Turns an object that was a Node back into a Node.
+
+  */
+  static objNodetoNode(obj) {
+    if (obj.__isNode__) {
+      let root = new Node(Object.assign({}, obj._data), obj._parent);
+
+      if (obj._children.length > 0) {
+        root.children = obj._children;
+      }
+
+      return root;
+    }
   }
 
   static arrayToNodes(arr) {
@@ -16,7 +36,17 @@ class Node {
         if (v instanceof Node) {
           c.push(v);
         } else {
-          c.push(new Node(v));
+          if (v.__isNode__) {
+            let temp = new Node(v._data, v._parent);
+
+            if (v._children.length > 0) {
+              temp._children = v._children;
+            }
+
+            c.push(temp);
+          } else {
+            c.push(new Node(v));
+          }
         }
       }
 
@@ -134,12 +164,36 @@ class Node {
       if (typeof fn === 'function') {
         return fn(this, node);
       }
+      // TODO: Handle object comparison. Need to compare deeply and by values.
+      if (typeof this._data === typeof node.data) {
+        if (typeof this._data === 'object') {
+          // TODO: Extract this into another module
+          return this.compareObjs(this._data, node.data);
+        }
+      }
       return this._data === node.data &&
         this._parent === node.parent &&
         // TODO: Deep comparison of children array
         this._children.length === node.children.length;
     }
     throw new InvalidNodeError('Target must be a Node.');
+  }
+
+  compareObjs(o1, o2) {
+    for (let p in o1) {
+      if (o2.hasOwnProperty(p)) {
+        if (typeof o1[p] === 'object') {
+          if (!this.compareObjs(o1[p], o2[p])) {
+            return false;
+          }
+        } else {
+          if (o1[p] !== o2[p]) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
   }
 
   /* Adds the child to the end of the array of children for this Node.

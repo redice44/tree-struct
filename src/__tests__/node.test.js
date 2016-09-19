@@ -96,6 +96,9 @@ test('equal nodes', () => {
   var similar = new Node('root');
   var similar1 = new Node({name: 'sim', extra: 1});
   var similar2 = new Node({name: 'sim', extra: 2});
+  var diffObjs1 = new Node({type: {hide: true}});
+  var diffObjs2 = new Node({type: {hide: false}});
+  var diffObjs3 = new Node({type: {hide: true}});
 
   var equality = function(me, test) {
     return me.data.name === test.data.name;
@@ -112,6 +115,9 @@ test('equal nodes', () => {
   root.push(similar);
   expect(root.equals(same)).toBe(false);
   expect(root.equals(similar)).toBe(false);
+
+  expect(diffObjs1.equals(diffObjs2)).toBe(false);
+  expect(diffObjs1.equals(diffObjs3)).toBe(true);
 });
 
 test('traverse depth first preorder', () => {
@@ -248,5 +254,60 @@ test('updating a node', () => {
   expect(root.children[3].data.name).toBe('child');
   expect(root.updateNode(rootTest, eq)).toBe(true);
   expect(root.data.name).toBe('hi');
+
+});
+
+/* Node.objNodetoNode */
+test('converting an old node to a Node', () => {
+  var obj = {
+    __isNode__: true,
+    _parent: null,
+    _children: [],
+    _data: {
+      id: 'root'
+    }
+  };
+  var root = new Node({id: 'root'});
+  var rootObj = Node.objNodetoNode(obj);
+  var child2c1 = new Node({id: 'child2.1'});
+  var root2Obj;
+  var root2;
+  var arrNodes = [
+    {
+      __isNode__: true,
+      _parent: root,
+      _children: [],
+      _data: {
+        id: 'child1'
+      }
+    },{
+      __isNode__: true,
+      _parent: root,
+      _children: [child2c1],
+      _data: {
+        id: 'child2'
+      }
+    },{
+      __isNode__: true,
+      _parent: root,
+      _children: [],
+      _data: {
+        id: 'child3'
+      }
+    }
+  ];
+  expect(root.equals(rootObj)).toBe(true);
+
+  root2Obj = {
+    __isNode__: true,
+    _parent: null,
+    _children: Node.arrayToNodes(arrNodes),
+    _data: {
+      id: 'root'
+    }
+  };
+
+  root2 = Node.objNodetoNode(root2Obj);
+  expect(root2.children.length).toBe(3);
 
 });
