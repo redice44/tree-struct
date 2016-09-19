@@ -28,7 +28,7 @@ class Node {
     }
   }
 
-  static arrayToNodes(arr) {
+  arrayToNodes(arr) {
     if (arr instanceof Array) {
       let c = [];
 
@@ -40,12 +40,12 @@ class Node {
             let temp = new Node(v._data, v._parent);
 
             if (v._children.length > 0) {
-              temp._children = v._children;
+              temp._children = this.arrayToNodes(v._children);
             }
 
             c.push(temp);
           } else {
-            c.push(new Node(v));
+            c.push(new Node(v, this));
           }
         }
       }
@@ -214,7 +214,7 @@ class Node {
   }
 
   set children(values) {
-    this._children = Node.arrayToNodes(values);
+    this._children = this.arrayToNodes(values);
     for (let c of this._children) {
       c.parent = this;
     }

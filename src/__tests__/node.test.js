@@ -305,13 +305,37 @@ test('converting an old node to a Node', () => {
   root2Obj = {
     __isNode__: true,
     _parent: null,
-    _children: Node.arrayToNodes(arrNodes),
+    _children: [
+      {
+        __isNode__: true,
+        _parent: root,
+        _children: [],
+        _data: {
+          id: 'child1'
+        }
+      },{
+        __isNode__: true,
+        _parent: root,
+        _children: [child2c1],
+        _data: {
+          id: 'child2'
+        }
+      },{
+        __isNode__: true,
+        _parent: root,
+        _children: [],
+        _data: {
+          id: 'child3'
+        }
+      }
+    ],
     _data: {
       id: 'root'
     }
   };
 
   root2 = Node.objNodetoNode(root2Obj);
+  root2.children = arrNodes;
   expect(root2.children.length).toBe(3);
 
 });
